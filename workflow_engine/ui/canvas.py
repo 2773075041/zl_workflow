@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsLineItem
-from PyQt6.QtCore import Qt, QPointF, pyqtSignal as Signal, QRectF
-from PyQt6.QtGui import QPen, QBrush, QColor, QPainter
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsLineItem
+from PySide6.QtCore import Qt, QPointF, Signal, QRectF
+from PySide6.QtGui import QPen, QBrush, QColor, QPainter
 
 class NodeGraphicsItem(QGraphicsRectItem):
     """节点图形项"""
@@ -77,7 +77,7 @@ class WorkflowCanvas(QGraphicsView):
         super().__init__()
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
-        self.setRenderHint(QPainter.Antialiasing)
+        self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.scene.setSceneRect(-5000, -5000, 10000, 10000)
