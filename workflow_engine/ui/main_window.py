@@ -178,6 +178,9 @@ class MainWindow(QMainWindow):
 
     def _setup_statusbar(self):
         self.statusBar().showMessage("就绪")
+        self.statusBar().setStyleSheet(
+            "QStatusBar { background-color: #007ACC; color: #FFFFFF; font-weight: bold; }"
+        )
 
     def _load_stylesheet(self):
         from .styles import get_theme

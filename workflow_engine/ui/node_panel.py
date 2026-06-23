@@ -6,16 +6,16 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QColor
 
 NODE_CATEGORIES = {
-    "输入": {"color": "#4A90D9", "category_key": "input", "nodes": [
+    "输入": {"color": "#6A9EC9", "category_key": "input", "nodes": [
         ("manual_input", "手动输入"), ("timer_trigger", "定时触发"),
         ("file_watcher", "文件监听"), ("webhook", "Webhook")]},
-    "输出": {"color": "#5CB85C", "category_key": "output", "nodes": [
+    "输出": {"color": "#7A9E6B", "category_key": "output", "nodes": [
         ("logger", "日志输出"), ("file_writer", "文件写入"), ("http_request", "HTTP请求")]},
-    "流程控制": {"color": "#E8A87C", "category_key": "flow", "nodes": [
+    "流程控制": {"color": "#C8A080", "category_key": "flow", "nodes": [
         ("condition", "条件分支"), ("loop", "循环执行"), ("sub_workflow", "子流程")]},
-    "数据处理": {"color": "#D4A574", "category_key": "data", "nodes": [
+    "数据处理": {"color": "#B0A07A", "category_key": "data", "nodes": [
         ("transform", "数据转换"), ("filter", "数据过滤")]},
-    "AI": {"color": "#9B59B6", "category_key": "ai", "nodes": [
+    "AI": {"color": "#9A7AAA", "category_key": "ai", "nodes": [
         ("agent", "AI Agent"), ("llm_call", "LLM调用")]},
 }
 
@@ -51,7 +51,7 @@ class NodeCard(QWidget):
         name_label = QLabel(display_name)
         name_label.setAlignment(Qt.AlignCenter)
         name_label.setWordWrap(True)
-        name_label.setStyleSheet("font-size: 10px; color: #E0D8D0; background: transparent; font-weight: bold;")
+        name_label.setStyleSheet("font-size: 10px; color: #D4D4D4; background: transparent; font-weight: bold;")
         layout.addWidget(name_label)
 
     def mousePressEvent(self, event):
