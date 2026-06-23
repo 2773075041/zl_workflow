@@ -1,0 +1,22 @@
+/* main_window.qss — 主窗口专属样式 */
+
+/* 工具栏图标按钮样式 */
+QToolBar QToolButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 8px;
+    min-width: 56px;
+}
+QToolBar QToolButton:hover {
+    background-color: #3C3C3C;
+}
+QToolBar QToolButton:on {
+    background-color: #E8A87C30;
+    color: #E8A87C;
+}
+
+/* 关于对话框按钮 */
+QDialogButtonBox QPushButton {
+    min-width: 80px;
+}

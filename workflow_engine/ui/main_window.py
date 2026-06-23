@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QToolBar, QStatusBar, QMessageBox
+    QToolBar, QStatusBar, QMessageBox, QToolButton
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction
@@ -75,33 +75,44 @@ class MainWindow(QMainWindow):
         about_action.triggered.connect(self.on_about)
         help_menu.addAction(about_action)
 
+    def _create_toolbar_button(self, icon_char: str, text: str, slot=None, shortcut: str = "", enabled: bool = True) -> QToolButton:
+        """创建带文字标签的工具栏按钮"""
+        btn = QToolButton(self)
+        btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        btn.setText(text)
+        btn.setShortcut(shortcut)
+        btn.setEnabled(enabled)
+        btn.setCursor(Qt.PointingHandCursor)
+        # 使用字体符号作为图标替代（避免依赖外部图标资源）
+        btn.setStyleSheet("font-size: 16px;")
+        if slot:
+            btn.clicked.connect(slot)
+        return btn
+
     def _setup_toolbar(self):
         toolbar = QToolBar("主工具栏")
-        toolbar.setIconSize(QSize(24, 24))
+        toolbar.setIconSize(QSize(20, 20))
         self.addToolBar(toolbar)
 
-        self.run_action = QAction("▶ 运行", self)
-        self.run_action.setShortcut("F5")
-        self.run_action.triggered.connect(self.on_run)
-        toolbar.addAction(self.run_action)
+        # 使用内联样式替代图标
+        btn_run = self._create_toolbar_button("▶", "运行", self.on_run, "F5", True)
+        toolbar.addWidget(btn_run)
 
-        self.pause_action = QAction("⏸ 暂停", self)
-        self.pause_action.setEnabled(False)
-        toolbar.addAction(self.pause_action)
+        btn_pause = self._create_toolbar_button("⏸", "暂停", None, "", False)
+        toolbar.addWidget(btn_pause)
+        self._pause_btn = btn_pause
 
-        self.stop_action = QAction("⏹ 停止", self)
-        self.stop_action.setEnabled(False)
-        toolbar.addAction(self.stop_action)
+        btn_stop = self._create_toolbar_button("⏹", "停止", None, "", False)
+        toolbar.addWidget(btn_stop)
+        self._stop_btn = btn_stop
 
         toolbar.addSeparator()
 
-        self.step_action = QAction("⏭ 单步", self)
-        self.step_action.triggered.connect(self.on_step)
-        toolbar.addAction(self.step_action)
+        btn_step = self._create_toolbar_button("⏭", "单步", self.on_step, "", True)
+        toolbar.addWidget(btn_step)
 
-        self.reset_action = QAction("🔄 重置", self)
-        self.reset_action.triggered.connect(self.on_reset)
-        toolbar.addAction(self.reset_action)
+        btn_reset = self._create_toolbar_button("🔄", "重置", self.on_reset, "", True)
+        toolbar.addWidget(btn_reset)
 
     def _setup_statusbar(self):
         self.statusBar().showMessage("就绪")
@@ -124,6 +135,10 @@ class MainWindow(QMainWindow):
     def on_run(self):
         self.log_panel.info("开始运行工作流")
         self.statusBar().showMessage("运行中...")
+        if hasattr(self, '_pause_btn'):
+            self._pause_btn.setEnabled(True)
+        if hasattr(self, '_stop_btn'):
+            self._stop_btn.setEnabled(True)
 
     def on_step(self):
         self.log_panel.info("单步执行")
