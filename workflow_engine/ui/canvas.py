@@ -8,12 +8,12 @@ GRID_DOT_COLOR = "#2A2A2A"
 GRID_DOT_SIZE = 1.5
 GRID_SPACING = 20
 NODE_COLORS = {
-    "input": {"primary": "#4A90D9", "secondary": "#2E6EB0"},
-    "output": {"primary": "#5CB85C", "secondary": "#3D8B3D"},
-    "flow": {"primary": "#E8A87C", "secondary": "#C38D9E"},
-    "data": {"primary": "#D4A574", "secondary": "#B8860B"},
-    "ai": {"primary": "#9B59B6", "secondary": "#7D3C98"},
-    "default": {"primary": "#4A90D9", "secondary": "#2E6EB0"},
+    "input": {"primary": "#6A9EC9", "secondary": "#4A7EA9"},
+    "output": {"primary": "#7A9E6B", "secondary": "#5A7E4B"},
+    "flow": {"primary": "#C8A080", "secondary": "#A88060"},
+    "data": {"primary": "#B0A07A", "secondary": "#90805A"},
+    "ai": {"primary": "#9A7AAA", "secondary": "#7A5A8A"},
+    "default": {"primary": "#6A9EC9", "secondary": "#4A7EA9"},
 }
 NODE_W, NODE_H, NODE_R, PORT_R = 140, 80, 8, 6
 NODE_TYPE_TO_CATEGORY = {
@@ -45,7 +45,7 @@ class NodeGraphicsItem(QGraphicsRectItem):
         self.setAcceptHoverEvents(True)
         text = QGraphicsTextItem(self)
         text.setPlainText(display_name or node_type)
-        text.setDefaultTextColor(QColor("#E0D8D0"))
+        text.setDefaultTextColor(QColor("#D4D4D4"))
         text.setFont(QFont("Segoe UI", 10, QFont.Bold))
         text.setPos(12, height / 2 - 10)
         type_label = QGraphicsTextItem(self)
@@ -55,8 +55,8 @@ class NodeGraphicsItem(QGraphicsRectItem):
         type_label.setPos(12, height / 2 + 6)
         port_y = height / 2
         self.input_port = QGraphicsEllipseItem(-PORT_R, port_y - PORT_R, PORT_R * 2, PORT_R * 2, self)
-        self.input_port.setBrush(QBrush(QColor("#5CB85C")))
-        self.input_port.setPen(QPen(QColor("#3D8B3D"), 1))
+        self.input_port.setBrush(QBrush(QColor("#7A9E6B")))
+        self.input_port.setPen(QPen(QColor("#5A7E4B"), 1))
         self.input_port.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.output_port = QGraphicsEllipseItem(width - PORT_R, port_y - PORT_R, PORT_R * 2, PORT_R * 2, self)
         self.output_port.setBrush(QBrush(QColor("#E74C3C")))
@@ -79,8 +79,8 @@ class NodeGraphicsItem(QGraphicsRectItem):
         elif state == "success":
             self._stop_pulse()
             self.glow_effect.setBlurRadius(15)
-            self.glow_effect.setColor(QColor("#5CB85C60"))
-            self.setPen(QPen(QColor("#5CB85C"), 2))
+            self.glow_effect.setColor(QColor("#7A9E6B60"))
+            self.setPen(QPen(QColor("#7A9E6B"), 2))
         elif state == "error":
             self._stop_pulse()
             self.glow_effect.setBlurRadius(15)
@@ -116,14 +116,14 @@ class NodeGraphicsItem(QGraphicsRectItem):
 
     def set_selected(self, selected: bool):
         if selected:
-            self.setPen(QPen(QColor("#E8A87C"), 2))
+            self.setPen(QPen(QColor("#007ACC"), 2))
             self.glow_effect.setBlurRadius(10)
-            self.glow_effect.setColor(QColor("#E8A87C40"))
+            self.glow_effect.setColor(QColor("#007ACC40"))
         else:
             self.set_state(self.node_state)
 
     def hoverEnterEvent(self, event):
-        self.setPen(QPen(QColor("#E8A87C"), 1))
+        self.setPen(QPen(QColor("#007ACC"), 1))
         super().hoverEnterEvent(event)
 
     def hoverLeaveEvent(self, event):
@@ -218,10 +218,10 @@ class WorkflowCanvas(QGraphicsView):
             }
             QMenu::item {
                 padding: 6px 32px 6px 16px;
-                color: #E0D8D0;
+                color: #D4D4D4;
             }
             QMenu::item:selected {
-                background-color: #E8A87C30;
+                background-color: #094771;
             }
             QMenu::separator {
                 height: 1px;
