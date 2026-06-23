@@ -1,7 +1,8 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QToolBar, QStatusBar, QMessageBox, QToolButton
+    QToolBar, QStatusBar, QMessageBox, QToolButton, QSizePolicy,
+    QScrollArea, QSplitter
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction
@@ -22,7 +23,6 @@ class MainWindow(QMainWindow):
     def _setup_ui(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        main_layout = QHBoxLayout(central_widget)
 
         from .node_panel import NodePanel
         from .canvas import WorkflowCanvas
@@ -34,14 +34,62 @@ class MainWindow(QMainWindow):
         self.property_panel = PropertyPanel()
         self.log_panel = LogPanel()
 
-        main_layout.addWidget(self.node_panel, 1)
-        main_layout.addWidget(self.canvas, 4)
-        main_layout.addWidget(self.property_panel, 1)
+        # 上部三栏布局
+        top_layout = QHBoxLayout()
+        top_layout.setContentsMargins(0, 0, 0, 0)
+        top_layout.addWidget(self.node_panel, 1)
+        top_layout.addWidget(self.canvas, 4)
+        top_layout.addWidget(self.property_panel, 1)
 
+        # 底部抽屉（可折叠）
+        self.log_toggle_btn = QToolButton()
+        self.log_toggle_btn.setText("📜 执行日志")
+        self.log_toggle_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.log_toggle_btn.setArrowType(Qt.ArrowType.DownArrow)
+        self.log_toggle_btn.setCheckable(True)
+        self.log_toggle_btn.setChecked(False)
+        self.log_toggle_btn.clicked.connect(self._toggle_log_panel)
+        self.log_toggle_btn.setStyleSheet("border: none; padding: 4px; font-size: 11px; color: #8A8A8A;")
+
+        self.log_toggle_btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        log_header = QWidget()
+        log_header_layout = QHBoxLayout(log_header)
+        log_header_layout.setContentsMargins(8, 4, 8, 4)
+        log_header_layout.addWidget(self.log_toggle_btn)
+        log_header.setStyleSheet("background-color: #252526; border-bottom: 1px solid #3C3C3C;")
+
+        # 日志面板默认收起（高度 0）
+        self._log_expanded = False
+        self.log_panel.setMaximumHeight(0)
+        self.log_panel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        # 底部容器
         bottom_widget = QWidget()
         bottom_layout = QVBoxLayout(bottom_widget)
+        bottom_layout.setContentsMargins(0, 0, 0, 0)
+        bottom_layout.setSpacing(0)
+        bottom_layout.addWidget(log_header)
         bottom_layout.addWidget(self.log_panel)
-        main_layout.addWidget(bottom_widget, 1)
+
+        # 主布局（上部 + 底部抽屉）
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        main_layout.addLayout(top_layout, 1)
+        main_layout.addWidget(bottom_widget)
+
+    def _toggle_log_panel(self, checked: bool):
+        """展开/收起日志面板"""
+        self._log_expanded = checked
+        if checked:
+            self.log_panel.setMaximumHeight(200)
+            self.log_toggle_btn.setArrowType(Qt.ArrowType.UpArrow)
+            self.log_toggle_btn.setText("📜 收起日志")
+        else:
+            self.log_panel.setMaximumHeight(0)
+            self.log_toggle_btn.setArrowType(Qt.ArrowType.DownArrow)
+            self.log_toggle_btn.setText("📜 执行日志")
 
     def _setup_menu(self):
         menubar = self.menuBar()
@@ -91,7 +139,7 @@ class MainWindow(QMainWindow):
 
     def _setup_toolbar(self):
         toolbar = QToolBar("主工具栏")
-        toolbar.setIconSize(QSize(20, 20))
+        toolbar.setIconSize(QSize(12, 12))
         self.addToolBar(toolbar)
 
         # 使用内联样式替代图标
