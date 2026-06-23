@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsPathItem, QGraphicsEllipseItem, QGraphicsDropShadowEffect
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsPathItem, QGraphicsEllipseItem, QGraphicsDropShadowEffect, QMenu
 from PySide6.QtCore import Qt, QPointF, Signal, QRectF, QTimer
 from PySide6.QtGui import QPen, QBrush, QColor, QPainter, QPainterPath, QFont
 
@@ -203,6 +203,42 @@ class WorkflowCanvas(QGraphicsView):
         self._selected_node_id = None
 
         self._setup背景()
+
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._show_context_menu)
+
+    def _show_context_menu(self, pos):
+        menu = QMenu(self)
+        menu.setStyleSheet("""
+            QMenu {
+                background-color: #2D2D2D;
+                border: 1px solid #3C3C3C;
+                border-radius: 4px;
+                padding: 4px;
+            }
+            QMenu::item {
+                padding: 6px 32px 6px 16px;
+                color: #E0D8D0;
+            }
+            QMenu::item:selected {
+                background-color: #E8A87C30;
+            }
+            QMenu::separator {
+                height: 1px;
+                background-color: #3C3C3C;
+                margin: 4px 0;
+            }
+        """)
+        delete_action = menu.addAction("删除节点 (Del)")
+        menu.addSeparator()
+        clear_action = menu.addAction("清空画布")
+
+        action = menu.exec(self.mapToGlobal(pos))
+        if action == delete_action and self._selected_node_id:
+            self.remove_node(self._selected_node_id)
+            self._selected_node_id = None
+        elif action == clear_action:
+            self.clear()
 
     def _setup背景(self):
         """设置背景"""
