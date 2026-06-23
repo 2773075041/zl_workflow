@@ -1,0 +1,52 @@
+/* 画布样式 - Canvas Styles */
+
+WorkflowCanvas {
+    background-color: @background;
+}
+
+CanvasNode {
+    background-color: @surface;
+    border: 2px solid @border;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+CanvasNode:hover {
+    border-color: @secondary;
+}
+
+CanvasNode:selected {
+    border-color: @primary;
+    border-width: 3px;
+}
+
+CanvasNode[type="input"] {
+    border-color: @primary;
+}
+
+CanvasNode[type="output"] {
+    border-color: @accent;
+}
+
+CanvasNode[type="ai"] {
+    border-color: #9C27B0;
+}
+
+CanvasNode[type="condition"] {
+    border-color: @warning;
+}
+
+CanvasConnection {
+    background-color: transparent;
+    color: @text_secondary;
+}
+
+CanvasConnection:selected {
+    color: @primary;
+    background-color: transparent;
+}
+
+CanvasGrid {
+    background-color: @background;
+    border: 1px solid @border;
+}

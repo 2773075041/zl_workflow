@@ -1,0 +1,53 @@
+/* 工具栏样式 - Toolbar Styles */
+
+QToolBar[main="true"] {
+    background-color: @surface;
+    border: none;
+    border-bottom: 1px solid @border;
+    spacing: 4px;
+    padding: 4px;
+}
+
+QToolBar[main="true"]::separator {
+    background-color: @border;
+    width: 1px;
+    margin: 4px 8px;
+}
+
+QToolBar[main="true"] QToolButton {
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+QToolBar[main="true"] QToolButton:hover {
+    background-color: @primary;
+    color: white;
+}
+
+QToolBar[main="true"] QToolButton:pressed {
+    background-color: @secondary;
+}
+
+QToolBar[main="true"] QToolButton:disabled {
+    color: @text_secondary;
+}
+
+ToolbarButton[run="true"] {
+    color: @success;
+}
+
+ToolbarButton[pause="true"] {
+    color: @warning;
+}
+
+ToolbarButton[stop="true"] {
+    color: @error;
+}
+
+ToolbarButton[step="true"] {
+    color: @primary;
+}
+
+ToolbarButton[reset="true"] {
+    color: @text_secondary;
+}

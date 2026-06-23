@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
         self._setup_menu()
         self._setup_toolbar()
         self._setup_statusbar()
+        self._load_stylesheet()
 
     def _setup_ui(self):
         central_widget = QWidget()
@@ -104,6 +105,12 @@ class MainWindow(QMainWindow):
 
     def _setup_statusbar(self):
         self.statusBar().showMessage("就绪")
+
+    def _load_stylesheet(self):
+        from .styles import get_theme
+        theme = get_theme()
+        stylesheet = theme.get_stylesheet()
+        self.setStyleSheet(stylesheet)
 
     def on_new_workflow(self):
         self.log_panel.info("新建工作流")

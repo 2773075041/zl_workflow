@@ -1,0 +1,40 @@
+/* 属性面板样式 - Property Panel Styles */
+
+PropertyPanel {
+    background-color: @surface;
+    border: 1px solid @border;
+}
+
+PropertyPanel QLabel[property-name="true"] {
+    color: @text_secondary;
+    font-size: 9pt;
+}
+
+PropertyPanel QLabel[property-value="true"] {
+    color: @text;
+    font-weight: bold;
+}
+
+PropertyPanel QLineEdit,
+PropertyPanel QTextEdit,
+PropertyPanel QSpinBox {
+    background-color: @background;
+}
+
+PropertyPanel QGroupBox {
+    border: 1px solid @border;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+PropertyPanel QGroupBox::title {
+    color: @primary;
+}
+
+PropertySection {
+    background-color: @background;
+    border-bottom: 1px solid @border;
+    padding: 8px;
+    font-weight: bold;
+    color: @primary;
+}
