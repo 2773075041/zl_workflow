@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
 
         self.node_panel = NodePanel()
         self.canvas = WorkflowCanvas()
+        self.canvas.node_double_clicked.connect(self._on_node_double_clicked)
         self.property_panel = PropertyPanel()
         self.log_panel = LogPanel()
 
@@ -214,3 +215,14 @@ class MainWindow(QMainWindow):
 
     def on_about(self):
         QMessageBox.about(self, "关于工作流引擎", "工作流引擎 v1.0\n\n一个可视化工作流节点框架")
+
+    def _on_node_double_clicked(self, node_id: str):
+        item = self.canvas._node_items.get(node_id)
+        if not item:
+            return
+        self.property_panel.set_node(
+            node_id=node_id,
+            node_type=item.node_type,
+            display_name=item.display_name,
+            config={}
+        )

@@ -238,7 +238,7 @@ QToolBar {
     border-left: none;
     border-right: none;
     padding: 4px 8px;
-    spacing: 4px;
+    spacing: 2px;
 }
 QToolBar::separator {
     width: 1px;

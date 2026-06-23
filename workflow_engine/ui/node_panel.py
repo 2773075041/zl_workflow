@@ -2,8 +2,9 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QGridLayout, QScrollArea,
     QGraphicsDropShadowEffect
 )
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtGui import QColor
+from PySide6.QtCore import Signal, Qt, QMimeData
+from PySide6.QtGui import QColor, QDrag
+
 
 NODE_CATEGORIES = {
     "输入": {"color": "#6A9EC9", "category_key": "input", "nodes": [
@@ -56,8 +57,22 @@ class NodeCard(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
+            self._drag_start_pos = event.position().toPoint()
             self.clicked.emit(self.node_type)
         super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() & Qt.LeftButton):
+            return
+        if not hasattr(self, '_drag_start_pos'):
+            return
+        if (event.position().toPoint() - self._drag_start_pos).manhattanLength() < 8:
+            return
+        drag = QDrag(self)
+        mime_data = QMimeData()
+        mime_data.setText(self.node_type)
+        drag.setMimeData(mime_data)
+        drag.exec(Qt.CopyAction)
 
     def enterEvent(self, event):
         glow = QGraphicsDropShadowEffect()

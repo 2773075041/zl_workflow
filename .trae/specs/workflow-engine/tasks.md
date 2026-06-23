@@ -115,7 +115,57 @@
   - 支持 prompt 模板
   - 支持 temperature 参数
 
+## Phase 6: UI 美化（复古工业风 × 赛博朋克暖光）
+
+- [ ] **Task 21**: 创建样式基础设施（theme.py + QSS 加载入口 + 基础样式）
+  - 创建 `workflow_engine/ui/styles/__init__.py`
+  - 创建 `workflow_engine/ui/styles/theme.py`（颜色/字体常量）
+  - 创建 `workflow_engine/ui/styles/base.qss`（全局基础样式）
+  - 创建 `workflow_engine/ui/styles/components.qss`（通用组件样式）
+  - 修改 `main_window.py` 添加样式加载
+
+- [ ] **Task 22**: 美化主窗口（工具栏图标+文字、状态栏）
+  - 填充 `workflow_engine/ui/styles/main_window.qss`
+  - 修改 `main_window.py` 将 QAction 改为 QToolButton
+
+- [ ] **Task 23**: 重构节点面板为网格卡片布局
+  - 填充 `workflow_engine/ui/styles/node_panel.qss`
+  - 重构 `node_panel.py` 为 NodeCard + QGridLayout
+
+- [ ] **Task 24**: 美化画布（网格点阵背景 + 贝塞尔曲线连线）
+  - 填充 `workflow_engine/ui/styles/canvas.qss`
+  - 重写 `canvas.py` 实现 drawBackground 网格点阵
+  - 重构 EdgeGraphicsItem 为贝塞尔曲线
+
+- [ ] **Task 25**: 美化节点样式 + 呼吸脉冲动画
+  - 重构 NodeGraphicsItem 圆角卡片 + QGraphicsDropShadowEffect
+  - 实现 set_state + _start_pulse + _pulse_step
+
+- [ ] **Task 26**: 美化属性面板 + 日志面板
+  - 填充 property_panel.qss 和 log_panel.qss
+  - 添加 objectName 到两个面板
+
+- [ ] **Task 27**: 右键上下文菜单 + 最终整合测试
+  - 在 canvas.py 中添加 QMenu 右键菜单
+  - 整合测试所有美化效果
+
 ## 任务依赖关系
+
+```
+Task 21 (样式基础设施)
+    ↓
+Task 22 (主窗口美化)      Task 23 (节点面板网格卡片)
+    ↓                           ↓
+Task 24 (画布美化) ← ← ← ← ↗
+    ↓
+Task 25 (节点样式+呼吸动画)
+    ↓
+Task 26 (属性+日志面板美化)
+    ↓
+Task 27 (右键菜单+整合测试)
+```
+
+## 原 Phase 1-5 依赖关系
 
 ```
 Task 1 (脚手架)

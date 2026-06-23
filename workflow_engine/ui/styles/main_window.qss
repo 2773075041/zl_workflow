@@ -5,8 +5,8 @@ QToolBar QToolButton {
     background-color: transparent;
     border: none;
     border-radius: 4px;
-    padding: 4px 6px;
-    min-width: 52px;
+    padding: 2px 4px;
+    min-width: 44px;
     color: @text_secondary;
 }
 QToolBar QToolButton:hover {

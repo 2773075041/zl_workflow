@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem, QGraphicsPathItem, QGraphicsEllipseItem, QGraphicsDropShadowEffect, QMenu
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem, QGraphicsRectItem, QGraphicsPathItem, QGraphicsEllipseItem, QMenu
 from PySide6.QtCore import Qt, QPointF, Signal, QRectF, QTimer
 from PySide6.QtGui import QPen, QBrush, QColor, QPainter, QPainterPath, QFont
 
@@ -24,6 +24,15 @@ NODE_TYPE_TO_CATEGORY = {
     "agent": "ai", "llm_call": "ai",
 }
 
+NODE_TYPE_DISPLAY_NAMES = {
+    "manual_input": "手动输入", "timer_trigger": "定时触发",
+    "file_watcher": "文件监听", "webhook": "Webhook",
+    "logger": "日志输出", "file_writer": "文件写入", "http_request": "HTTP请求",
+    "condition": "条件分支", "loop": "循环执行", "sub_workflow": "子流程",
+    "transform": "数据转换", "filter": "数据过滤",
+    "agent": "AI Agent", "llm_call": "LLM调用",
+}
+
 class NodeGraphicsItem(QGraphicsRectItem):
     """美化版节点图形项 — 圆角卡片 + 发光效果"""
 
@@ -33,6 +42,7 @@ class NodeGraphicsItem(QGraphicsRectItem):
         self.node_id = node_id
         self.node_type = node_type
         self.category = category
+        self.display_name = display_name or node_type
         self.node_state = "idle"
         colors = NODE_COLORS.get(category, NODE_COLORS["default"])
         self.primary_color = colors["primary"]
@@ -43,48 +53,44 @@ class NodeGraphicsItem(QGraphicsRectItem):
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.setAcceptHoverEvents(True)
-        text = QGraphicsTextItem(self)
-        text.setPlainText(display_name or node_type)
-        text.setDefaultTextColor(QColor("#D4D4D4"))
-        text.setFont(QFont("Segoe UI", 10, QFont.Bold))
-        text.setPos(12, height / 2 - 10)
-        type_label = QGraphicsTextItem(self)
-        type_label.setPlainText(f"[{category}]")
-        type_label.setDefaultTextColor(QColor("#E0D8D0" + "80"))
-        type_label.setFont(QFont("Segoe UI", 7))
-        type_label.setPos(12, height / 2 + 6)
+        self._name_text = display_name or node_type
+        self._category_text = f"[{category}]"
+        self._text_color = QColor("#FFFFFF")
+        self._sub_color = QColor("#E0D8D080")
+        self._name_font = QFont("Segoe UI", 10, QFont.Bold)
+        self._sub_font = QFont("Segoe UI", 7)
         port_y = height / 2
         self.input_port = QGraphicsEllipseItem(-PORT_R, port_y - PORT_R, PORT_R * 2, PORT_R * 2, self)
         self.input_port.setBrush(QBrush(QColor("#7A9E6B")))
         self.input_port.setPen(QPen(QColor("#5A7E4B"), 1))
         self.input_port.setFlag(QGraphicsItem.ItemIsSelectable, False)
+        self.input_port.setData(0, "input_port")
+        self.input_port.setAcceptHoverEvents(True)
         self.output_port = QGraphicsEllipseItem(width - PORT_R, port_y - PORT_R, PORT_R * 2, PORT_R * 2, self)
         self.output_port.setBrush(QBrush(QColor("#E74C3C")))
         self.output_port.setPen(QPen(QColor("#C0392b"), 1))
         self.output_port.setFlag(QGraphicsItem.ItemIsSelectable, False)
-        self.glow_effect = QGraphicsDropShadowEffect()
-        self.glow_effect.setBlurRadius(0)
-        self.glow_effect.setColor(QColor(self.primary_color + "00"))
-        self.glow_effect.setOffset(0, 0)
-        self.setGraphicsEffect(self.glow_effect)
+        self.output_port.setData(0, "output_port")
+        self.output_port.setAcceptHoverEvents(True)
+        self.glow_overlay = QGraphicsRectItem(-8, -8, width + 16, height + 16, self)
+        self.glow_overlay.setPen(QPen(Qt.NoPen))
+        self.glow_overlay.setBrush(QBrush(QColor(0, 0, 0, 0)))
+        self.glow_overlay.setZValue(-1)
 
     def set_state(self, state: str):
         self.node_state = state
         if state == "idle":
-            self.glow_effect.setBlurRadius(0)
-            self.glow_effect.setColor(QColor(self.primary_color + "00"))
+            self.glow_overlay.setBrush(QBrush(QColor(0, 0, 0, 0)))
             self.setPen(QPen(QColor(self.secondary_color), 1))
         elif state == "running":
             self._start_pulse()
         elif state == "success":
             self._stop_pulse()
-            self.glow_effect.setBlurRadius(15)
-            self.glow_effect.setColor(QColor("#7A9E6B60"))
+            self.glow_overlay.setBrush(QBrush(QColor("#7A9E6B40")))
             self.setPen(QPen(QColor("#7A9E6B"), 2))
         elif state == "error":
             self._stop_pulse()
-            self.glow_effect.setBlurRadius(15)
-            self.glow_effect.setColor(QColor("#E74C3C60"))
+            self.glow_overlay.setBrush(QBrush(QColor("#E74C3C40")))
             self.setPen(QPen(QColor("#E74C3C"), 2))
 
     def _start_pulse(self):
@@ -100,14 +106,14 @@ class NodeGraphicsItem(QGraphicsRectItem):
     def _pulse_step(self):
         import math
         self._pulse_phase += 0.1
-        glow = int(15 + 15 * math.sin(self._pulse_phase))
-        self.glow_effect.setBlurRadius(glow)
         r1, g1, b1 = self._hex_to_rgb(self.secondary_color)
         r2, g2, b2 = 245, 192, 122
         t = (math.sin(self._pulse_phase) + 1) / 2
         r = int(r1 + (r2 - r1) * t)
         g = int(g1 + (g2 - g1) * t)
         b = int(b1 + (b2 - b1) * t)
+        alpha = int(30 + 60 * t)
+        self.glow_overlay.setBrush(QBrush(QColor(r, g, b, alpha)))
         self.setPen(QPen(QColor(r, g, b), 2))
 
     def _hex_to_rgb(self, hex_color: str) -> tuple:
@@ -117,8 +123,7 @@ class NodeGraphicsItem(QGraphicsRectItem):
     def set_selected(self, selected: bool):
         if selected:
             self.setPen(QPen(QColor("#007ACC"), 2))
-            self.glow_effect.setBlurRadius(10)
-            self.glow_effect.setColor(QColor("#007ACC40"))
+            self.glow_overlay.setBrush(QBrush(QColor("#007ACC30")))
         else:
             self.set_state(self.node_state)
 
@@ -136,6 +141,18 @@ class NodeGraphicsItem(QGraphicsRectItem):
                 edge.update_path()
         return super().itemChange(change, value)
 
+    def paint(self, painter: QPainter, option, widget=None):
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setPen(self.pen())
+        painter.setBrush(self.brush())
+        painter.drawRoundedRect(self.rect(), NODE_R, NODE_R)
+        painter.setPen(self._text_color)
+        painter.setFont(self._name_font)
+        painter.drawText(QRectF(12, self.rect().height() / 2 - 14, self.rect().width() - 24, 18), Qt.AlignLeft | Qt.AlignVCenter, self._name_text)
+        painter.setPen(self._sub_color)
+        painter.setFont(self._sub_font)
+        painter.drawText(QRectF(12, self.rect().height() / 2 + 2, self.rect().width() - 24, 14), Qt.AlignLeft | Qt.AlignVCenter, self._category_text)
+
 
 class EdgeGraphicsItem(QGraphicsPathItem):
     """连线图形项（贝塞尔曲线）"""
@@ -146,10 +163,11 @@ class EdgeGraphicsItem(QGraphicsPathItem):
         self.target_item = target_item
         self.setPen(QPen(QColor(EDGE_DEFAULT), 2))
         self.setZValue(-1)
-        # 注册到源节点
-        if not hasattr(source_item, '_edges'):
-            source_item._edges = []
-        source_item._edges.append(self)
+        for node_item in (source_item, target_item):
+            if not hasattr(node_item, '_edges'):
+                node_item._edges = []
+            if self not in node_item._edges:
+                node_item._edges.append(self)
         self.update_path()
 
     def update_path(self):
@@ -194,13 +212,18 @@ class WorkflowCanvas(QGraphicsView):
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
+        self.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.scene.setSceneRect(-5000, -5000, 10000, 10000)
+        self.setAcceptDrops(True)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
         self._node_items = {}
         self._edge_items = []
         self._selected_node_id = None
+        self._conn_source = None
+        self._conn_temp_line = None
 
         self._setup背景()
 
@@ -324,3 +347,123 @@ class WorkflowCanvas(QGraphicsView):
                 self.remove_node(self._selected_node_id)
                 self._selected_node_id = None
         super().keyPressEvent(event)
+
+    def dragEnterEvent(self, event):
+        """接收来自节点面板的拖拽"""
+        if event.mimeData().hasText():
+            event.acceptProposedAction()
+        else:
+            super().dragEnterEvent(event)
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasText():
+            event.acceptProposedAction()
+        else:
+            super().dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        """在落点创建节点"""
+        if event.mimeData().hasText():
+            node_type = event.mimeData().text()
+            scene_pos = self.mapToScene(event.position().toPoint())
+            node_id = f"node_{id(self)}_{len(self._node_items)}_{int(scene_pos.x())}_{int(scene_pos.y())}"
+            display_name = NODE_TYPE_DISPLAY_NAMES.get(node_type, node_type)
+            self.add_node(node_id, node_type, scene_pos.x(), scene_pos.y(), display_name)
+            event.acceptProposedAction()
+        else:
+            super().dropEvent(event)
+
+    def _item_at(self, pos):
+        """获取鼠标位置处的顶层节点项（忽略子项如端口）"""
+        items = self.scene.items(self.mapToScene(pos), Qt.IntersectsItemShape, Qt.AscendingOrder)
+        for item in items:
+            if isinstance(item, NodeGraphicsItem):
+                return item
+            # 如果是端口，返回其父节点
+            if hasattr(item, 'parentItem') and item.parentItem():
+                parent = item.parentItem()
+                if isinstance(parent, NodeGraphicsItem):
+                    return parent
+        return None
+
+    def _port_at(self, pos):
+        """获取鼠标位置处的端口项，返回 (node_item, port_type) 或 None"""
+        items = self.scene.items(self.mapToScene(pos), Qt.IntersectsItemShape, Qt.AscendingOrder)
+        for item in items:
+            if hasattr(item, 'data') and item.data(0) in ("input_port", "output_port"):
+                parent = item.parentItem()
+                if isinstance(parent, NodeGraphicsItem):
+                    return (parent, item.data(0))
+        return None
+
+    def mousePressEvent(self, event):
+        """处理端口拖拽连线和节点选中"""
+        if event.button() == Qt.LeftButton:
+            port_info = self._port_at(event.position().toPoint())
+            if port_info and port_info[1] == "output_port":
+                # 从输出端口开始创建连线
+                self._conn_source = port_info[0]
+                source_center = self._conn_source.output_port.sceneBoundingRect().center()
+                self._conn_temp_line = QGraphicsPathItem()
+                self._conn_temp_line.setPen(QPen(QColor("#E74C3C"), 2, Qt.DashLine))
+                self._conn_temp_line.setZValue(10)
+                path = QPainterPath()
+                path.moveTo(source_center)
+                path.lineTo(source_center)
+                self._conn_temp_line.setPath(path)
+                self.scene.addItem(self._conn_temp_line)
+                self.setDragMode(QGraphicsView.NoDrag)
+                event.accept()
+                return
+            node_item = self._item_at(event.position().toPoint())
+            if node_item:
+                self._select_node(node_item.node_id)
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        """拖拽连线时更新临时曲线"""
+        if self._conn_source and self._conn_temp_line:
+            source_center = self._conn_source.output_port.sceneBoundingRect().center()
+            mouse_pos = self.mapToScene(event.position().toPoint())
+            dx = abs(mouse_pos.x() - source_center.x())
+            offset = max(dx * 0.5, 50)
+            path = QPainterPath()
+            path.moveTo(source_center)
+            cp1 = QPointF(source_center.x() + offset, source_center.y())
+            cp2 = QPointF(mouse_pos.x() - offset, mouse_pos.y())
+            path.cubicTo(cp1, cp2, mouse_pos)
+            self._conn_temp_line.setPath(path)
+            event.accept()
+            return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        """释放时检测是否落到输入端口"""
+        if event.button() == Qt.LeftButton and self._conn_source and self._conn_temp_line:
+            port_info = self._port_at(event.position().toPoint())
+            if port_info and port_info[1] == "input_port" and port_info[0].node_id != self._conn_source.node_id:
+                self.add_edge(self._conn_source.node_id, port_info[0].node_id)
+            self.scene.removeItem(self._conn_temp_line)
+            self._conn_temp_line = None
+            self._conn_source = None
+            self.setDragMode(QGraphicsView.RubberBandDrag)
+            event.accept()
+            return
+        super().mouseReleaseEvent(event)
+
+    def _select_node(self, node_id):
+        """选中节点并更新状态"""
+        for nid, item in self._node_items.items():
+            item.set_selected(nid == node_id)
+            item.setSelected(nid == node_id)
+        self._selected_node_id = node_id
+        self.node_selected.emit(node_id)
+
+    def mouseDoubleClickEvent(self, event):
+        """双击节点时发出信号"""
+        if event.button() == Qt.LeftButton:
+            node_item = self._item_at(event.position().toPoint())
+            if node_item:
+                self.node_double_clicked.emit(node_item.node_id)
+                return
+        super().mouseDoubleClickEvent(event)

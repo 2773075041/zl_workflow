@@ -1,6 +1,7 @@
 /* 画布样式 - Canvas Styles */
 
 WorkflowCanvas {
+    background-color: #1E1E1E;
     background-color: @background;
 }
 
