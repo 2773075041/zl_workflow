@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         top_layout.addWidget(self.canvas, 4)
         top_layout.addWidget(self.property_panel, 1)
 
-        # 底部抽屉（可折叠）
+        # 日志开关按钮
         self.log_toggle_btn = QToolButton()
         self.log_toggle_btn.setText("📜 执行日志")
         self.log_toggle_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
@@ -49,22 +49,25 @@ class MainWindow(QMainWindow):
         self.log_toggle_btn.setCheckable(True)
         self.log_toggle_btn.setChecked(False)
         self.log_toggle_btn.clicked.connect(self._toggle_log_panel)
-        self.log_toggle_btn.setStyleSheet("border: none; padding: 4px; font-size: 11px; color: #8A8A8A;")
-
-        self.log_toggle_btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.log_toggle_btn.setStyleSheet(
+            "border: none; padding: 6px 12px; font-size: 11px; color: #8A8A8A;"
+            "background: transparent;"
+        )
+        self.log_toggle_btn.setCursor(Qt.PointingHandCursor)
 
         log_header = QWidget()
+        log_header.setStyleSheet("background-color: #252526; border-top: 1px solid #3C3C3C;")
         log_header_layout = QHBoxLayout(log_header)
-        log_header_layout.setContentsMargins(8, 4, 8, 4)
+        log_header_layout.setContentsMargins(0, 0, 0, 0)
         log_header_layout.addWidget(self.log_toggle_btn)
-        log_header.setStyleSheet("background-color: #252526; border-bottom: 1px solid #3C3C3C;")
+        log_header_layout.addStretch()
 
-        # 日志面板默认收起（高度 0）
+        # 日志面板默认收起
         self._log_expanded = False
         self.log_panel.setMaximumHeight(0)
         self.log_panel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        # 底部容器
+        # 底部容器（日志开关 + 日志面板）
         bottom_widget = QWidget()
         bottom_layout = QVBoxLayout(bottom_widget)
         bottom_layout.setContentsMargins(0, 0, 0, 0)
@@ -72,12 +75,23 @@ class MainWindow(QMainWindow):
         bottom_layout.addWidget(log_header)
         bottom_layout.addWidget(self.log_panel)
 
-        # 主布局（上部 + 底部抽屉）
+        # 垂直分割器：上部内容 + 底部日志（只和内容区同宽）
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        splitter.setHandleWidth(2)
+        splitter.setContentsMargins(0, 0, 0, 0)
+        splitter.setStretchFactor(0, 1)  # 上部可拉伸
+        splitter.setStretchFactor(1, 0)  # 底部不拉伸
+
+        top_container = QWidget()
+        top_container.setLayout(top_layout)
+        splitter.addWidget(top_container)
+        splitter.addWidget(bottom_widget)
+
+        # 主布局
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
-        main_layout.addLayout(top_layout, 1)
-        main_layout.addWidget(bottom_widget)
+        main_layout.addWidget(splitter)
 
     def _toggle_log_panel(self, checked: bool):
         """展开/收起日志面板"""
