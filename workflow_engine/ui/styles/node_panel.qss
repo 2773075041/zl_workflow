@@ -1,48 +1,26 @@
-/* 节点面板样式 - Node Panel Styles */
-
-NodePanel {
-    background-color: @surface;
-    border: 1px solid @border;
+#node_panel_container {
+    background-color: #2D2D2D;
+    border-right: 1px solid #3C3C3C;
 }
 
-NodePanel QLabel {
-    padding: 4px;
-}
-
-NodePanel QLabel[section-title="true"] {
+#node_panel_title {
+    font-size: 14px;
     font-weight: bold;
-    color: @primary;
-    font-size: 10pt;
-    border-bottom: 1px solid @border;
-    padding-bottom: 4px;
+    color: #E0D8D0;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid #3C3C3C;
+    border-left: 3px solid #E8A87C;
 }
 
-NodePanel QListWidget {
-    border: none;
-    background-color: transparent;
+NodeCard {
+    background-color: #252526;
+    border: 1px solid #3C3C3C;
+    border-radius: 6px;
+    border-left-width: 3px;
+    min-width: 90px;
+    min-height: 70px;
 }
-
-NodeItem {
-    background-color: @background;
-    border: 1px solid @border;
-    border-radius: 4px;
-    padding: 8px;
-    margin: 2px;
-}
-
-NodeItem:hover {
-    background-color: @surface;
-    border-color: @primary;
-}
-
-NodeItem[dragging="true"] {
-    background-color: @primary;
-    color: white;
-    border-color: @primary;
-}
-
-NodeCategory {
-    font-size: 9pt;
-    color: @text_secondary;
-    padding: 4px 0px;
+NodeCard:hover {
+    border-color: #E8A87C;
+    background-color: #2D2D2D;
 }
