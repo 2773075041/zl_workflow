@@ -1,17 +1,17 @@
 /* log_panel.qss — 日志面板样式 */
 
 #log_panel_container {
-    background-color: #1E1E1E;
-    border-top: 1px solid #3C3C3C;
+    background-color: @background;
+    border-top: 1px solid @border;
 }
 
 #log_panel_title {
     font-size: 14px;
     font-weight: bold;
-    color: #E0D8D0;
+    color: @text;
     padding: 8px 12px;
-    border-bottom: 1px solid #3C3C3C;
-    border-left: 3px solid #E8A87C;
+    border-bottom: 1px solid @border;
+    border-left: 3px solid @primary;
 }
 
 /* 日志面板样式 - Log Panel Styles */

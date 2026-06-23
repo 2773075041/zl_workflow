@@ -1,26 +1,26 @@
 #node_panel_container {
-    background-color: #2D2D2D;
-    border-right: 1px solid #3C3C3C;
+    background-color: @surface;
+    border-right: 1px solid @border;
 }
 
 #node_panel_title {
     font-size: 14px;
     font-weight: bold;
-    color: #E0D8D0;
+    color: @text;
     padding: 10px 12px 8px;
-    border-bottom: 1px solid #3C3C3C;
-    border-left: 3px solid #E8A87C;
+    border-bottom: 1px solid @border;
+    border-left: 3px solid @primary;
 }
 
 NodeCard {
     background-color: #252526;
-    border: 1px solid #3C3C3C;
+    border: 1px solid @border;
     border-radius: 6px;
     border-left-width: 3px;
     min-width: 90px;
     min-height: 70px;
 }
 NodeCard:hover {
-    border-color: #E8A87C;
-    background-color: #2D2D2D;
+    border-color: @primary;
+    background-color: @surface;
 }
