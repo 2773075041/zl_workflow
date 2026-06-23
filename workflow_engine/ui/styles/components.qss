@@ -1,264 +1,122 @@
-/* 组件样式 - Component Styles */
+/* components.qss — 通用组件样式 */
 
-/* 节点面板 */
-NodePanel {
+/* === 节点面板 === */
+#node_panel_container {
     background-color: @surface;
-    border: 1px solid @border;
-    border-radius: 4px;
+    border-right: 1px solid @border;
 }
 
-NodePanel QLabel[section="true"] {
+#node_panel_title {
+    font-size: 14px;
     font-weight: bold;
-    color: @primary;
-    font-size: 10pt;
-    padding: 4px;
+    color: @text;
+    padding: 10px 12px 8px;
     border-bottom: 1px solid @border;
+    border-left: 3px solid @primary;
 }
 
-/* 画布区域 */
-WorkflowCanvas {
+/* 节点卡片 */
+NodeCard {
     background-color: @background;
     border: 1px solid @border;
-    border-radius: 4px;
+    border-radius: 6px;
+    border-left-width: 3px;
+    min-width: 90px;
+    min-height: 70px;
 }
-
-/* 属性面板 */
-PropertyPanel {
-    background-color: @surface;
-    border: 1px solid @border;
-    border-radius: 4px;
-}
-
-PropertyPanel QLabel[prop-name="true"] {
-    color: @text_secondary;
-    font-size: 9pt;
-}
-
-PropertyPanel QLabel[prop-value="true"] {
-    color: @text;
-    font-weight: bold;
-}
-
-/* 日志面板 */
-LogPanel {
-    background-color: @surface;
-    border: 1px solid @border;
-    border-radius: 4px;
-}
-
-LogPanel QLabel[log-level="info"] {
-    color: @primary;
-}
-
-LogPanel QLabel[log-level="warning"] {
-    color: @warning;
-}
-
-LogPanel QLabel[log-level="error"] {
-    color: @error;
-}
-
-LogPanel QLabel[log-level="success"] {
-    color: @success;
-}
-
-/* 工具栏按钮 */
-QToolBar QToolButton {
-    padding: 6px 12px;
-    border-radius: 4px;
-}
-
-QToolBar QToolButton:hover {
-    background-color: @primary;
-    color: white;
-}
-
-QToolBar QToolButton:disabled {
-    color: @text_secondary;
-}
-
-/* 主工具栏操作样式 */
-QAction[run="true"] {
-    color: @success;
-}
-
-QAction[pause="true"] {
-    color: @warning;
-}
-
-QAction[stop="true"] {
-    color: @error;
-}
-
-/* 节点样式 */
-WorkflowNode {
-    background-color: @surface;
-    border: 2px solid @border;
-    border-radius: 8px;
-    padding: 8px;
-    min-width: 120px;
-}
-
-WorkflowNode[selected="true"] {
-    border: 2px solid @primary;
-    background-color: @surface;
-}
-
-WorkflowNode:hover {
-    border: 2px solid @secondary;
-}
-
-WorkflowNode[type="start"] {
-    border-color: @success;
-    background-color: @surface;
-}
-
-WorkflowNode[type="end"] {
-    border-color: @error;
-    background-color: @surface;
-}
-
-WorkflowNode[type="ai"] {
+NodeCard:hover {
     border-color: @primary;
     background-color: @surface;
 }
 
-WorkflowNode[type="condition"] {
-    border-color: @warning;
+/* === 画布 === */
+WorkflowCanvas {
+    background-color: @background;
+    border: none;
+}
+
+/* === 属性面板 === */
+#property_panel_container {
     background-color: @surface;
+    border-left: 1px solid @border;
 }
 
-/* 连接线 */
-ConnectionLine {
-    background-color: transparent;
-    color: @text_secondary;
-}
-
-ConnectionLine:hover {
-    color: @primary;
-}
-
-ConnectionLine[selected="true"] {
-    color: @primary;
-    background-color: transparent;
-}
-
-/* 分组框 */
-QGroupBox {
-    border: 1px solid @border;
-    border-radius: 4px;
-    margin-top: 8px;
-    padding-top: 8px;
+#property_panel_title {
+    font-size: 14px;
     font-weight: bold;
     color: @text;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid @border;
+    border-left: 3px solid @primary;
 }
 
+/* === 日志面板 === */
+#log_panel_container {
+    background-color: @background;
+    border-top: 1px solid @border;
+}
+
+#log_panel_title {
+    font-size: 14px;
+    font-weight: bold;
+    color: @text;
+    padding: 8px 12px;
+    border-bottom: 1px solid @border;
+    border-left: 3px solid @primary;
+}
+
+/* === 分组框 === */
+QGroupBox {
+    background-color: @surface;
+    border: 1px solid @border;
+    border-radius: 6px;
+    margin-top: 8px;
+    padding-top: 16px;
+    font-weight: bold;
+    color: @primary;
+}
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
+    left: 12px;
     padding: 0 4px;
-    color: @primary;
 }
 
-/* 选项卡部件 */
+/* === 标签页 === */
 QTabWidget::pane {
     border: 1px solid @border;
     border-radius: 4px;
     background-color: @surface;
 }
-
 QTabBar::tab {
     background-color: @background;
     color: @text_secondary;
-    padding: 8px 16px;
     border: 1px solid @border;
     border-bottom: none;
+    padding: 6px 16px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
-
 QTabBar::tab:selected {
     background-color: @surface;
     color: @primary;
-    font-weight: bold;
+    border-color: @primary;
 }
-
 QTabBar::tab:hover:!selected {
     background-color: @surface;
     color: @text;
 }
 
-/* 工具栏分隔器 */
-QToolBar > QWidget {
-    background-color: transparent;
-}
-
-/* 分割器 */
+/* === 分割器 === */
 QSplitter::handle {
     background-color: @border;
 }
-
 QSplitter::handle:horizontal {
     width: 2px;
 }
-
 QSplitter::handle:vertical {
     height: 2px;
 }
-
 QSplitter::handle:hover {
     background-color: @primary;
-}
-
-/* 堆叠部件 */
-QStackedWidget {
-    background-color: @surface;
-    border: 1px solid @border;
-    border-radius: 4px;
-}
-
-/* 甘特图/时间线部件（预留） */
-TimelineWidget {
-    background-color: @surface;
-    border: 1px solid @border;
-}
-
-/* 搜索框 */
-SearchBox {
-    background-color: @background;
-    border: 1px solid @border;
-    border-radius: 12px;
-    padding: 4px 12px;
-    color: @text;
-}
-
-SearchBox:focus {
-    border: 1px solid @primary;
-}
-
-SearchBox::placeholder {
-    color: @text_secondary;
-}
-
-/* 徽章/标记 */
-Badge {
-    background-color: @primary;
-    color: white;
-    border-radius: 8px;
-    padding: 2px 6px;
-    font-size: 9pt;
-    min-width: 16px;
-    min-height: 16px;
-}
-
-Badge[warning="true"] {
-    background-color: @warning;
-}
-
-Badge[error="true"] {
-    background-color: @error;
-}
-
-Badge[success="true"] {
-    background-color: @success;
 }

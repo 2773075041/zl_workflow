@@ -32,17 +32,17 @@ class Theme:
             'base': 'base.qss',
             'components': 'components.qss',
             'colors': {
-                'primary': '#2196F3',
-                'secondary': '#64B5F6',
-                'accent': '#FF9800',
-                'background': '#121212',
-                'surface': '#1E1E1E',
-                'text': '#FFFFFF',
-                'text_secondary': '#B0B0B0',
-                'border': '#424242',
-                'error': '#CF6679',
-                'success': '#81C784',
-                'warning': '#FFD54F',
+                'primary': '#E8A87C',
+                'secondary': '#C38D9E',
+                'accent': '#F5C07A',
+                'background': '#1E1E1E',
+                'surface': '#2D2D2D',
+                'text': '#E0D8D0',
+                'text_secondary': '#8A8A8A',
+                'border': '#3C3C3C',
+                'error': '#F14C4C',
+                'success': '#5CB85C',
+                'warning': '#DCDCAA',
             }
         },
         'blue': {
@@ -65,8 +65,8 @@ class Theme:
         },
     }
     
-    _current_theme: str = 'light'
-    _colors: Dict[str, str] = THEMES['light']['colors']
+    _current_theme: str = 'dark'
+    _colors: Dict[str, str] = THEMES['dark']['colors']
     
     @classmethod
     def get_stylesheet(cls) -> str:
@@ -77,12 +77,11 @@ class Theme:
         qss_files = [
             'base.qss',
             'components.qss',
+            'main_window.qss',
             'canvas.qss',
             'node_panel.qss',
             'property_panel.qss',
             'log_panel.qss',
-            'toolbar.qss',
-            'menu.qss',
         ]
         
         stylesheet = ''
@@ -126,3 +125,8 @@ def get_theme() -> Theme:
 def set_theme(theme_name: str):
     """设置全局主题"""
     Theme.set_theme(theme_name)
+
+
+def load_stylesheet() -> str:
+    """加载样式表"""
+    return Theme.get_stylesheet()
