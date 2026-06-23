@@ -7,6 +7,7 @@ class LogPanel(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.setObjectName("log_panel_container")
         self._setup_ui()
 
     def _setup_ui(self):
@@ -15,6 +16,7 @@ class LogPanel(QWidget):
 
         title_layout = QHBoxLayout()
         title = QLabel("执行日志")
+        title.setObjectName("log_panel_title")
         title.setStyleSheet("font-weight: bold; font-size: 14px;")
         title_layout.addWidget(title)
         title_layout.addStretch()

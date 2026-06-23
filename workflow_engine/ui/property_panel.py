@@ -8,6 +8,7 @@ class PropertyPanel(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.setObjectName("property_panel_container")
         self._current_node_id = None
         self._config_widgets = {}
         self._setup_ui()
@@ -17,6 +18,7 @@ class PropertyPanel(QWidget):
         layout.setContentsMargins(5, 5, 5, 5)
 
         title = QLabel("属性面板")
+        title.setObjectName("property_panel_title")
         title.setStyleSheet("font-weight: bold; font-size: 14px; padding: 5px;")
         layout.addWidget(title)
 

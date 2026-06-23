@@ -1,3 +1,19 @@
+/* property_panel.qss — 属性面板样式 */
+
+#property_panel_container {
+    background-color: #2D2D2D;
+    border-left: 1px solid #3C3C3C;
+}
+
+#property_panel_title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #E0D8D0;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid #3C3C3C;
+    border-left: 3px solid #E8A87C;
+}
+
 /* 属性面板样式 - Property Panel Styles */
 
 PropertyPanel {
